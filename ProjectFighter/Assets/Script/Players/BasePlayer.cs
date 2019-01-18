@@ -9,13 +9,9 @@ using UnityEngine;
 /// </summary>
 public class BasePlayer : Default
 {
-    enum PlayerStates
-    {
-        Alive,
-        Dead
-    };
-
-    PlayerStates PlayerState;
+    //Base References Declaration
+    PlayerStates playerState;
+    BasePlayer_DamageHandler playerDamageHandler;
 
     MessageHandler messageHandler;
 
@@ -26,6 +22,9 @@ public class BasePlayer : Default
     protected string _Name;
 
     //Accessors
+    /// <summary>
+    /// If current health changes the gui part will know
+    /// </summary>
     public int CurrentHealth
     {
         get
@@ -43,7 +42,7 @@ public class BasePlayer : Default
                 else
                 {
                     _CurrentHealth = 0;
-                    PlayerState = PlayerStates.Dead;
+                    //PlayerState = PlayerStates.Dead;
 
                     messageHandler.instance.PlayerKilled(this._Name);
                 }
@@ -55,7 +54,10 @@ public class BasePlayer : Default
 
     private void Start()
     {
+        //Initialisation des variables
         messageHandler = FindObjectOfType<MessageHandler>();
+        playerState = GetComponent<PlayerStates>();
+        playerDamageHandler = GetComponent<BasePlayer_DamageHandler>();
 
         //Création d'un nouveau dictionnaire si le dictionnaire n'est pas trouvé
         if (Players == null)
@@ -64,7 +66,8 @@ public class BasePlayer : Default
         //add to the directory for all the players
         Players.Add(this);
 
-        PlayerState = PlayerStates.Alive;
+        playerState.SetPlayerState(PlayerStates.PlayerState.Alive);
+        playerState.SetPlayerMovement(PlayerStates.PlayerMovement.Idling);
     }
 
     public virtual void PlayerKilled()
